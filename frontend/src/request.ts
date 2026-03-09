@@ -5,6 +5,9 @@
 import axios, {type AxiosError, type AxiosRequestConfig } from 'axios'
 import config from '@/config'
 import router from '@/router'
+import { useAuthStore } from '@/stores/authStore'
+
+const anthStore = () => useAuthStore()
 
 // 创建基础Axios实例对象
 const request = axios.create(
@@ -42,20 +45,32 @@ request.interceptors.response.use(
     (response) => {
         return response
     },
-    (error: AxiosError) => {
+    async (error: AxiosError) => {
         // 处理401未授权错误
         if (error.response?.status === 401) {
             // 获取当前路由路径
             const currentPath = window.location.pathname
 
-            // 如果不在登录页则跳转到登录页
+            // 如果不在登录页
             if (currentPath !== '/auth') {
-                // 清除本地存储的token
-                localStorage.removeItem('access_token')
-                localStorage.removeItem('refresh_token')
+                // 尝试刷新token
+                const refreshSuccess = await anthStore().refresh()
 
-                // 跳转到登录页
-                router.push('/auth')
+                if (refreshSuccess) {
+                    // 刷新成功，重新发送请求
+                    const originalRequest = error.config
+                    if (originalRequest) {
+                        const token = localStorage.getItem('access_token')
+                        if (token && originalRequest.headers) {
+                            originalRequest.headers.Authorization = `Bearer ${token}`
+                        }
+                        return request(originalRequest)
+                    }
+                }
+
+                // 刷新失败，执行登出并跳转到登录页
+                anthStore().logout()
+                router.replace('/auth')
             }
         }
 

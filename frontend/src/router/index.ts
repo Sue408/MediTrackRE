@@ -12,50 +12,30 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true
     },
     children: [
-      // 今日用药（默认首页）
       {
-        path: '',
+        path: 'today-medicine',
         name: 'TodayMedicine',
-        component: () => import('@/pages/Home/TodayMedicine.vue'),
-        meta: {
-          requiresAuth: true
-        }
+        component: () => import('@/pages/Home/TodayMedicine.vue')
       },
-      // 药品管理
       {
-        path: 'medicine',
-        name: 'MedicineManagement',
-        component: () => import('@/pages/Home/MedicineManagement.vue'),
-        meta: {
-          requiresAuth: true
-        }
-      },
-      // 计划管理
-      {
-        path: 'plan',
-        name: 'PlanManagement',
-        component: () => import('@/pages/Home/PlanManagement.vue'),
-        meta: {
-          requiresAuth: true
-        }
-      },
-      // 关系管理
-      {
-        path: 'relationship',
-        name: 'RelationshipManagement',
-        component: () => import('@/pages/Home/RelationshipManagement.vue'),
-        meta: {
-          requiresAuth: true
-        }
-      },
-      // 个人中心
-      {
-        path: 'userCenter',
+        path: 'user-center',
         name: 'UserCenter',
-        component: () => import('@/pages/Home/userCenter.vue'),
-        meta: {
-          requiresAuth: true
-        }
+        component: () => import('@/pages/Home/userCenter.vue')
+      },
+      {
+        path: 'medicine-management',
+        name: 'MedicineManagement',
+        component: () => import('@/pages/Home/MedicineManagement.vue')
+      },
+      {
+        path: 'plan-management',
+        name: 'PlanManagement',
+        component: () => import('@/pages/Home/PlanManagement.vue')
+      },
+      {
+        path: 'relationship-management',
+        name: 'RelationshipManagement',
+        component: () => import('@/pages/Home/RelationshipManagement.vue')
       }
     ]
   },
@@ -74,19 +54,24 @@ const router = createRouter({
 })
 
 // 设置路由守卫
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
   // 判断目标路由是否需要登录
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    // 未登录则跳转到登录页
-    next('/auth')
+    // 尝试刷新token
+    const refreshSuccess = await authStore.refresh()
+
+    if (!refreshSuccess) {
+      // 刷新失败，跳转到登录页
+      return {path: '/auth', replace: true}
+    }
   } else if (to.path === '/auth' && authStore.isLoggedIn) {
     // 已登录访问登录页则跳转到主页
-    next('/')
-  } else {
-    next()
+    return {path: '/', replace: true}
   }
+
+  return true
 })
 
 // 导出路由对象

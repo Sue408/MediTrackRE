@@ -1,281 +1,235 @@
 <template>
-  <div class="home-layout">
-    <!-- 顶部栏 -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="logo">
-          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L4 6V12C4 16.42 7.58 20.74 12 22C16.42 20.74 20 16.42 20 12V6L12 2Z" fill="currentColor"/>
-            <path d="M12 6L16 8V12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12V8L12 6Z" fill="white" fill-opacity="0.5"/>
-          </svg>
-        </div>
-        <span class="app-name">Meditrack</span>
-      </div>
-      <div class="topbar-right">
-        <div class="user-info">
-          <span class="user-nickname">{{ nickname || '用户' }}</span>
-          <div class="user-avatar">
-            <img v-if="imageUrl" :src="imageUrl" alt="用户头像" />
-            <div v-else class="avatar-placeholder">
-              {{ nickname ? nickname.charAt(0).toUpperCase() : 'U' }}
+    <div class="home-container">
+        <!-- 遮罩层: 实现点击空白区域关闭卡片 -->
+        <div class="overlay" v-if="activeCard" @click="closeCard"></div>
+        <!-- 卡片布局容器 -->
+        <div class="grid-container" :class="{ 'has-active': activeCard }">
+            <!-- 卡片A: 今日用药 -->
+            <div
+            class="card A"
+            :class="{ active: activeCard === 'A' }"
+            @click="openCard('A')"
+            >
+                <div class="card-content">
+                    今日用药
+                </div>
             </div>
-          </div>
+
+            <!-- 卡片B: 用户中心 -->
+            <div
+            class="card B"
+            :class="{ active: activeCard === 'B' }"
+            @click="openCard('B')"
+            >
+                <div class="card-content">
+                    用户中心
+                </div>
+            </div>
+
+            <!-- 卡片C: 药品管理 -->
+            <div
+            class="card C"
+            :class="{ active: activeCard === 'C' }"
+            @click="openCard('C')"
+            >
+                <div class="card-content">
+                    药品管理
+                </div>
+            </div>
+
+            <!-- 卡片D: 计划管理 -->
+            <div
+            class="card D"
+            :class="{ active: activeCard === 'D' }"
+            @click="openCard('D')"
+            >
+                <div class="card-content">
+                    计划管理
+                </div>
+            </div>
+
+            <!-- 卡片E: 关系管理 -->
+            <div
+            class="card E"
+            :class="{ active: activeCard === 'E' }"
+            @click="openCard('E')"
+            >
+                <div class="card-content">
+                    关系管理
+                </div>
+            </div>
+
+            <!-- 子路由视图 -->
+            <div class="sub-page">
+                <router-view />
+            </div>
         </div>
-      </div>
-    </header>
-
-    <div class="main-container">
-      <!-- 侧边栏 -->
-      <aside class="sidebar">
-        <nav class="sidebar-nav">
-          <router-link
-            v-for="item in menuItems"
-            :key="item.path"
-            :to="item.path"
-            class="nav-item"
-            :class="{ active: currentRoute === item.path }"
-          >
-            <span class="nav-icon" v-html="item.icon"></span>
-            <span class="nav-label">{{ item.label }}</span>
-          </router-link>
-        </nav>
-      </aside>
-
-      <!-- 功能视图 -->
-      <main class="content">
-        <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </main>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
+    import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
 
-const route = useRoute()
-const authStore = useAuthStore()
+    // 路由管理对象
+    const router = useRouter()
 
-const nickname = computed(() => authStore.nickname)
-const imageUrl = computed(() => authStore.imageUrl)
+    // 状态管理变量: 记录当前激活的卡片
+    const activeCard = ref<string|null>(null)
 
-const currentRoute = computed(() => route.path)
+    // 卡片到路由的映射
+    const cardRoutes: Record<string, string> = {
+        'A': '/today-medicine',
+        'B': '/user-center',
+        'C': '/medicine-management',
+        'D': '/plan-management',
+        'E': '/relationship-management'
+    }
 
-const menuItems = [
-  {
-    path: '/',
-    label: '今日用药',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
-  },
-  {
-    path: '/medicine',
-    label: '药品管理',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5L3.5 13.5C2.1 12.1 2.1 9.9 3.5 8.5L8.5 3.5C9.9 2.1 12.1 2.1 13.5 3.5L20.5 10.5C21.9 11.9 21.9 14.1 20.5 15.5L15.5 20.5C14.1 21.9 11.9 21.9 10.5 20.5Z"/><path d="M8 8L16 16"/></svg>'
-  },
-  {
-    path: '/plan',
-    label: '计划管理',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
-  },
-  {
-    path: '/relationship',
-    label: '关系管理',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
-  },
-  {
-    path: '/userCenter',
-    label: '个人中心',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
-  }
-]
+    /**
+     * 关闭卡片方法
+     */
+    const closeCard = () => {
+        // 打印调试信息
+        console.log(`已经关闭了卡片${activeCard.value}`)
+        // 修改状态变量
+        activeCard.value = null
+        // 更改路由
+        router.replace('/')
+    }
+
+    /**
+     * 打开卡片方法
+     */
+    const openCard = (cardName: string) => {
+        // 修改状态变量
+        activeCard.value = cardName
+        // 打印调试信息
+        console.log(`已经打开了卡片${activeCard.value}`)
+        // 更改路由
+        router.replace(cardRoutes[cardName]!)
+    }
+
 </script>
 
 <style scoped>
-.home-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #f5f7fa;
-}
+    .home-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+    }
 
-/* 顶部栏样式 */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 24px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  z-index: 100;
-}
+    .grid-container {
+        width: 900px;
+        height: 650px;
+        gap: 10px;
+        position: relative;
+    }
 
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+    }
 
-.logo {
-  width: 36px;
-  height: 36px;
-  color: #7494ec;
-}
+    .card {
+        position: absolute;
+        background-color: #fff;
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        z-index: 2;
+    }
+    .card:hover {
+        box-shadow: 0 0 30px #7494ec;
+        transform: translateY(-5px);
+    }
 
-.logo-icon {
-  width: 100%;
-  height: 100%;
-}
+    .card .card-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        font-weight: 600;
+        transition: all 0.6s ease;
+    }
 
-.app-name {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-}
+    .card.A {
+        top: 0;
+        left: 0;
+        width: 80%;
+        height: 80%;
+    }
+    .card.B {
+        top: 0;
+        right: 0;
+        width: 18%;
+        height: 80%;
+    }
+    .card.C {
+        bottom: 0;
+        left: 0;
+        width: 39%;
+        height: 18%;
+    }
+    .card.D {
+        bottom: 0;
+        left: 41%;
+        width: 39%;
+        height: 18%;
+    }
+    .card.E {
+        bottom: 0;
+        right: 0;
+        width: 18%;
+        height: 18%;
+    }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-}
+    .card.active .card-content {
+        opacity: 0
+    }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-}
+    .has-active .card:not(.active) {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .card.active {
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
 
-.user-nickname {
-  font-size: 14px;
-  color: #666;
-}
+    .card.D.active {
+        left: 0;
+    }
 
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #7494ec;
-}
+    .sub-page {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        border-radius: 30px;
+        z-index: 1;
+    }
 
-.user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* 主容器样式 */
-.main-container {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* 侧边栏样式 */
-.sidebar {
-  width: 220px;
-  background-color: #fff;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
-  padding: 20px 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0 12px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  color: #666;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.nav-item:hover {
-  background-color: #f0f4ff;
-  color: #7494ec;
-}
-
-.nav-item.active {
-  background-color: #7494ec;
-  color: #fff;
-}
-
-.nav-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-icon :deep(svg) {
-  width: 100%;
-  height: 100%;
-}
-
-.nav-label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* 功能视图样式 */
-.content {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-}
-
-/* 路由切换动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* 响应式设计 */
-@media screen and (max-width: 768px) {
-  .sidebar {
-    width: 60px;
-  }
-
-  .nav-label {
-    display: none;
-  }
-
-  .nav-item {
-    justify-content: center;
-    padding: 12px;
-  }
-
-  .user-nickname {
-    display: none;
-  }
-}
+    .has-active .sub-page {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+        z-index: 3;
+        transition-delay: 0.6s;
+    }
 </style>

@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # JWT算法、密钥与令牌有效期
     algorithm: str = "HS256"
     secret_key: str = "MediTrack"
-    access_token_expire_minutes: int = 5
+    access_token_expire_minutes: int = 1
     refresh_token_expire_days: int = 1
 
     # 核心配置对象配置参数

@@ -29,6 +29,6 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
  * @param data 刷新token请求
  * @returns 新的token响应
  */
-export async function refreshToken(data: RefreshRequest): Promise<TokenResponse> {
+export async function refreshAccessToken(data: RefreshRequest): Promise<TokenResponse> {
     return await http.post<TokenResponse>('/auth/refresh', data)
 }

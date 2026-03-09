@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core import config
-from src.api import auth_router
+from src.api import auth_router, user_router
 
 # ========= 初始化数据库 =========
 from src.db import Base, engine
@@ -44,7 +44,14 @@ app.include_router(
     tags=["auth"]
     )
 
-# 3. ...
+# 3. User路由
+app.include_router(
+    user_router,
+    prefix="/api/user",
+    tags=["user"]
+    )
+
+# 4. ...
 
 # ========= 启动uvicorn服务 =========
 if __name__ == "__main__":
