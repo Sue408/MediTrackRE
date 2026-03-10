@@ -15,12 +15,34 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'today-medicine',
         name: 'TodayMedicine',
-        component: () => import('@/pages/Home/TodayMedicine.vue')
+        component: () => import('@/pages/Home/TodayMedicine.vue'),
       },
       {
         path: 'user-center',
         name: 'UserCenter',
-        component: () => import('@/pages/Home/userCenter.vue')
+        component: () => import('@/pages/Home/userCenter.vue'),
+        children: [
+          {
+            path: '',
+            name: 'UserCenterRoot',
+            redirect: { name: 'UserInfo' }
+          },
+          {
+            path: 'user-info',
+            name: 'UserInfo',
+            component: () => import('@/pages/UserCenter/UserInfo.vue')
+          },
+          {
+            path: 'health-records',
+            name: 'HealthRecords',
+            component: () => import('@/pages/UserCenter/HealthRecords.vue')
+          },
+          {
+            path: 'security-center',
+            name: 'SecurityCenter',
+            component: () => import('@/pages/UserCenter/SecurityCenter.vue')
+          }
+        ]
       },
       {
         path: 'medicine-management',

@@ -30,5 +30,5 @@ class Track(Base):
     )
 
     # 关联关系
-    user: relationship = relationship("User", back_populates="tracks")
-    plan: relationship = relationship("Plan", back_populates="tracks")
+    user = relationship("User", back_populates="tracks")
+    plan = relationship("Plan", back_populates="tracks")

@@ -44,5 +44,5 @@ class Drug(Base):
     )
 
     # 关联关系
-    user: relationship = relationship("User", back_populates="drugs")
-    plan_drugs: relationship = relationship("PlanDrug", back_populates="drug")
+    user = relationship("User", back_populates="drugs")
+    plan_drugs = relationship("PlanDrug", back_populates="drug")

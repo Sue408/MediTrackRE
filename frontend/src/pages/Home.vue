@@ -21,8 +21,9 @@
             :class="{ active: activeCard === 'B' }"
             @click="openCard('B')"
             >
+                <div class="side-bar-view"></div>
                 <div class="card-content">
-                    用户中心
+                    <UserPreview />
                 </div>
             </div>
 
@@ -68,8 +69,13 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     import { useRouter } from 'vue-router'
+    import UserPreview from '@/components/UserPreview.vue'
+    import { useAuthStore } from '@/stores/authStore'
+
+    // 全局状态对象
+    const authStore = useAuthStore()
 
     // 路由管理对象
     const router = useRouter()
@@ -109,6 +115,30 @@
         // 更改路由
         router.replace(cardRoutes[cardName]!)
     }
+
+    // 挂载后自动获取用户信息
+    onMounted(async () => {
+         await authStore.fetchUserInfo()
+    })
+
+    // 监听路由变化，同步 activeCard
+    watch(
+    () => router.currentRoute.value.path,
+    (newPath) => {
+        // 当路由回到根路径 '/' 时，关闭所有卡片
+        if (newPath === '/') {
+        activeCard.value = null
+        } else {
+        // 如果想知道当前是哪个卡片对应这个路由
+        const currentCard = Object.keys(cardRoutes).find(
+            key => cardRoutes[key] === newPath
+        )
+        if (currentCard) {
+            activeCard.value = currentCard
+        }
+        }
+    }
+    )
 
 </script>
 
@@ -160,6 +190,7 @@
         height: 100%;
         width: 100%;
         font-weight: 600;
+        padding: 15px;
         transition: all 0.6s ease;
     }
 
@@ -208,6 +239,8 @@
         width: 100%;
         height: 100%;
         z-index: 2;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 
     .card.D.active {
@@ -224,12 +257,25 @@
         background-color: #fff;
         border-radius: 30px;
         z-index: 1;
+        transition: opacity 0.3s ease;
     }
 
     .has-active .sub-page {
         opacity: 1;
-        transition: opacity 0.3s ease;
         z-index: 3;
         transition-delay: 0.6s;
+    }
+
+    .card .side-bar-view {
+        top: 0;
+        left: 0;
+        background-color: #7494ec;
+        opacity: 0;
+    }
+
+    .card.active .side-bar-view {
+        height: 100%;
+        width: 25%;
+        opacity: 1;
     }
 </style>

@@ -48,6 +48,6 @@ class Plan(Base):
     )
 
     # 关联关系
-    user: relationship = relationship("User", back_populates="plans")
-    tracks: relationship = relationship("Track", back_populates="plan")
-    plan_drugs: relationship = relationship("PlanDrug", back_populates="plan")
+    user = relationship("User", back_populates="plans")
+    tracks = relationship("Track", back_populates="plan")
+    plan_drugs = relationship("PlanDrug", back_populates="plan")

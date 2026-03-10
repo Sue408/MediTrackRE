@@ -13,7 +13,7 @@
 - updated_at: 更新时间
 """
 from datetime import datetime, timezone
-from sqlalchemy import Integer, String, DateTime, Text, JSON, Numeric, ForeignKey
+from sqlalchemy import Integer, String, DateTime, JSON, Numeric, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..db import Base
@@ -44,4 +44,4 @@ class Profile(Base):
     )
 
     # 关联关系
-    user: relationship = relationship("User", back_populates="profile")
+    user = relationship("User", back_populates="profile")

@@ -43,5 +43,5 @@ class Relation(Base):
     )
 
     # 关联关系
-    user: relationship = relationship("User", foreign_keys=[user_id], back_populates="relations")
-    target_user: relationship = relationship("User", foreign_keys=[target_user_id])
+    user = relationship("User", foreign_keys=[user_id], back_populates="relations")
+    target_user = relationship("User", foreign_keys=[target_user_id])

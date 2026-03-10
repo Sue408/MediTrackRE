@@ -47,8 +47,8 @@ class User(Base):
     )
 
     # 关联关系
-    profile: relationship = relationship("Profile", back_populates="user", uselist=False)
-    drugs: relationship = relationship("Drug", back_populates="user")
-    plans: relationship = relationship("Plan", back_populates="user")
-    tracks: relationship = relationship("Track", back_populates="user")
-    relations: relationship = relationship("Relation", foreign_keys="Relation.user_id", back_populates="user")
+    profile = relationship("Profile", back_populates="user", uselist=False)
+    drugs = relationship("Drug", back_populates="user")
+    plans = relationship("Plan", back_populates="user")
+    tracks = relationship("Track", back_populates="user")
+    relations = relationship("Relation", foreign_keys="Relation.user_id", back_populates="user")
