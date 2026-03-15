@@ -15,22 +15,30 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..db import Base
 
-
 class Relation(Base):
     """用户关系映射表模型"""
+    # 表名
     __tablename__ = "relations"
 
+    # 主键
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    # 外键: 关联用户UID
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # 外键: 关联目标用户UID
     target_user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # 关系类型
     relation_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    # 关系状态
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    # 备注名称
     remark: Mapped[str] = mapped_column(String(255), nullable=False)
+    # 创建时间
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         default=datetime.now(timezone.utc)
     )
+    # 更新时间
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,

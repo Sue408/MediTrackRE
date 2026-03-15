@@ -61,18 +61,6 @@ export async function deleteDrug(id: number): Promise<void> {
  * GET /api/drugs/search
  * @param keyword 搜索关键词
  */
-export async function searchExternalDrugs(keyword: string): Promise<Array<{
-    id: number
-    name: string
-    image: string | null
-    usage_method: string
-    dosage: string
-}>> {
-    return await http.get<Array<{
-        id: number
-        name: string
-        image: string | null
-        usage_method: string
-        dosage: string
-    }>>('/drugs/search', { params: { keyword } })
+export async function searchExternalDrugs(keyword: string): Promise<Array<Drug>> {
+    return await http.get<Array<Drug>>('/drugs/search', { params: { keyword } })
 }

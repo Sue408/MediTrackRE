@@ -47,8 +47,6 @@ export interface UpdateDrugRequest {
 
 // 药品列表查询参数
 export interface DrugListParams {
-    page?: number
-    page_size?: number
     keyword?: string
     usage_method?: UsageMethod
     source?: DrugSource
@@ -58,6 +56,4 @@ export interface DrugListParams {
 export interface DrugListResponse {
     items: Drug[]
     total: number
-    page: number
-    page_size: number
 }

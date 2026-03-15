@@ -7,7 +7,8 @@ Meditrack-backend核心模块导出
 """
 from .config import config
 from .security import TokenData, PasswordHasher, JWTManager
-from .deps import get_db, get_token_data
+from .deps import get_db, get_user_id
+from .utils import get_user_from_id
 
 __all__ = [
     "config",
@@ -15,5 +16,6 @@ __all__ = [
     "PasswordHasher",
     "JWTManager",
     "get_db",
-    "get_token_data"
+    "get_user_id",
+    "get_user_from_id"
 ]

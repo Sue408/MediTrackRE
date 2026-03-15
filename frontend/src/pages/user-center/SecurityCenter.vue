@@ -152,10 +152,10 @@
     import { ref, reactive } from 'vue'
     import { useRouter } from 'vue-router'
     import { changePassword } from '@/api/user'
-    import { useAuthStore } from '@/stores/authStore'
+    import { useUserStore } from '@/stores/userStore'
 
     const router = useRouter()
-    const authStore = useAuthStore()
+    const userStore = useUserStore()
 
     // 密码表单数据
     const passwordData = reactive({
@@ -230,7 +230,7 @@
     // 退出登录
     const handleLogout = () => {
         if (confirm('确定要退出登录吗？')) {
-            authStore.logout()
+            userStore.logout()
             router.replace('/auth')
         }
     }

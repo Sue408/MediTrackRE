@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/userStore'
 
 // 定义页面路由
 const routes: Array<RouteRecordRaw> = [
@@ -15,12 +15,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'today-medicine',
         name: 'TodayMedicine',
-        component: () => import('@/pages/Home/TodayMedicine.vue'),
+        component: () => import('@/pages/home/TodayDrugTasks.vue'),
       },
       {
         path: 'user-center',
         name: 'UserCenter',
-        component: () => import('@/pages/Home/userCenter.vue'),
+        component: () => import('@/pages/home/UserCenter.vue'),
         children: [
           {
             path: '',
@@ -30,34 +30,34 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'user-info',
             name: 'UserInfo',
-            component: () => import('@/pages/UserCenter/UserInfo.vue')
+            component: () => import('@/pages/user-center/UserInfo.vue')
           },
           {
             path: 'health-records',
             name: 'HealthRecords',
-            component: () => import('@/pages/UserCenter/HealthRecords.vue')
+            component: () => import('@/pages/user-center/HealthRecord.vue')
           },
           {
             path: 'security-center',
             name: 'SecurityCenter',
-            component: () => import('@/pages/UserCenter/SecurityCenter.vue')
+            component: () => import('@/pages/user-center/SecurityCenter.vue')
           }
         ]
       },
       {
         path: 'medicine-management',
         name: 'MedicineManagement',
-        component: () => import('@/pages/Home/MedicineManagement.vue')
+        component: () => import('@/pages/home/DrugManagement.vue')
       },
       {
         path: 'plan-management',
         name: 'PlanManagement',
-        component: () => import('@/pages/Home/PlanManagement.vue')
+        component: () => import('@/pages/home/PlanManagement.vue')
       },
       {
         path: 'relationship-management',
         name: 'RelationshipManagement',
-        component: () => import('@/pages/Home/RelationshipManagement.vue')
+        component: () => import('@/pages/home/FriendManagement.vue')
       }
     ]
   },
@@ -77,7 +77,7 @@ const router = createRouter({
 
 // 设置路由守卫
 router.beforeEach(async (to) => {
-  const authStore = useAuthStore()
+  const authStore = useUserStore()
 
   // 判断目标路由是否需要登录
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
@@ -85,7 +85,8 @@ router.beforeEach(async (to) => {
     const refreshSuccess = await authStore.refresh()
 
     if (!refreshSuccess) {
-      // 刷新失败，跳转到登录页
+      // 刷新失败，登出并跳转到登录页
+      authStore.logout()
       return {path: '/auth', replace: true}
     }
   } else if (to.path === '/auth' && authStore.isLoggedIn) {

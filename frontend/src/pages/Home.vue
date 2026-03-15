@@ -21,7 +21,7 @@
             :class="{ active: activeCard === 'B' }"
             @click="openCard('B')"
             >
-                <div class="side-bar-view"></div>
+                <div class="side-bar-view user"></div>
                 <div class="card-content">
                     <UserPreview />
                 </div>
@@ -34,7 +34,7 @@
             @click="openCard('C')"
             >
                 <div class="card-content">
-                    药品管理
+                    <DrugPreview />
                 </div>
             </div>
 
@@ -45,7 +45,7 @@
             @click="openCard('D')"
             >
                 <div class="card-content">
-                    计划管理
+                    <PlanPreview />
                 </div>
             </div>
 
@@ -55,8 +55,9 @@
             :class="{ active: activeCard === 'E' }"
             @click="openCard('E')"
             >
+                <div class="side-bar-view friend"></div>
                 <div class="card-content">
-                    关系管理
+                    <FriendPreview />
                 </div>
             </div>
 
@@ -71,11 +72,14 @@
 <script setup lang="ts">
     import { ref, onMounted, watch } from 'vue'
     import { useRouter } from 'vue-router'
-    import UserPreview from '@/components/UserPreview.vue'
-    import { useAuthStore } from '@/stores/authStore'
+    import UserPreview from '@/components/home/UserPreview.vue'
+    import DrugPreview from '@/components/home/DrugPreview.vue'
+    import PlanPreview from '@/components/home/PlanPreview.vue'
+    import FriendPreview from '@/components/home/FriendPreview.vue'
+    import { useUserStore } from '@/stores/userStore'
 
     // 全局状态对象
-    const authStore = useAuthStore()
+    const authStore = useUserStore()
 
     // 路由管理对象
     const router = useRouter()
@@ -190,7 +194,6 @@
         height: 100%;
         width: 100%;
         font-weight: 600;
-        padding: 15px;
         transition: all 0.6s ease;
     }
 
@@ -269,13 +272,21 @@
     .card .side-bar-view {
         top: 0;
         left: 0;
-        background-color: #7494ec;
+        background: linear-gradient(135deg, #7494ec 0%, #8aa7f0 50%, #9bb3f0 100%);
         opacity: 0;
     }
 
     .card.active .side-bar-view {
         height: 100%;
-        width: 25%;
+        
         opacity: 1;
+    }
+
+    .card.active .side-bar-view.user {
+        width: 25%;
+    }
+
+    .card.active .side-bar-view.friend {
+        width: 31%;
     }
 </style>

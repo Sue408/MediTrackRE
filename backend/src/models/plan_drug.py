@@ -10,14 +10,18 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..db import Base
 
-
 class PlanDrug(Base):
     """计划药品中间表模型"""
+    # 表名
     __tablename__ = "plan_drugs"
 
+    # 主键
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    # 外键: 关联计划主键
     plan_id: Mapped[int] = mapped_column(Integer, ForeignKey("plans.id"), nullable=False, index=True)
+    # 外键: 关联药品主键
     drug_id: Mapped[int] = mapped_column(Integer, ForeignKey("drugs.id"), nullable=False, index=True)
+    # 计划内的药品用量
     dosage: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # 唯一约束: 同一计划中同一药品只能出现一次

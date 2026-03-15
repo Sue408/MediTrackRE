@@ -8,7 +8,7 @@ import { getUserInfo, updateUserInfo as updateUserInfoApi } from '@/api/user'
 import type { LoginRequest, LoginResponse } from '@/types/authTypes'
 import type { UpdateUserInfoRequest } from '@/types/userTypes'
 
-export const useAuthStore = defineStore('auth', () => {
+export const useUserStore = defineStore('user', () => {
     // 从localStorage中获取accessToken
     const accessToken = ref<string | null>(localStorage.getItem('access_token'))
     const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))

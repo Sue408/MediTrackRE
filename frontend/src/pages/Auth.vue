@@ -39,13 +39,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthForm from '@/components/AuthForm.vue'
-import { useAuthStore } from '@/stores/authStore'
+import AuthForm from '@/components/auth/AuthForm.vue'
+import { useUserStore } from '@/stores/userStore'
 import { register as registerApi } from '@/api/auth'
 import { extractErrorMessage } from '@/utils/error'
 
 const router = useRouter()
-const authStore = useAuthStore()
+const authStore = useUserStore()
 
 const isActive = ref(false)
 const loginLoading = ref(false)

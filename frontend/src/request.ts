@@ -5,9 +5,9 @@
 import axios, {type AxiosError, type AxiosRequestConfig } from 'axios'
 import config from '@/config'
 import router from '@/router'
-import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/userStore'
 
-const anthStore = () => useAuthStore()
+const anthStore = () => useUserStore()
 
 // 创建基础Axios实例对象
 const request = axios.create(
@@ -46,8 +46,23 @@ request.interceptors.response.use(
         return response
     },
     async (error: AxiosError) => {
+        const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
+
+        // 如果是刷新token的请求，直接返回错误，不进行刷新处理
+        if (originalRequest?.url?.includes('/auth/refresh')) {
+            return Promise.reject(error)
+        }
+
         // 处理401未授权错误
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && originalRequest) {
+            // 标记已重试过，防止无限循环
+            if (originalRequest._retry) {
+                anthStore().logout()
+                router.replace('/auth')
+                return Promise.reject(error)
+            }
+            originalRequest._retry = true
+
             // 获取当前路由路径
             const currentPath = window.location.pathname
 
@@ -58,7 +73,6 @@ request.interceptors.response.use(
 
                 if (refreshSuccess) {
                     // 刷新成功，重新发送请求
-                    const originalRequest = error.config
                     if (originalRequest) {
                         const token = localStorage.getItem('access_token')
                         if (token && originalRequest.headers) {
@@ -72,6 +86,11 @@ request.interceptors.response.use(
                 anthStore().logout()
                 router.replace('/auth')
             }
+        }
+
+        // 处理422错误
+        if (error.response?.status === 422) {
+            console.log(error.response)
         }
 
         return Promise.reject(error)
